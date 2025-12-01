@@ -17,6 +17,11 @@
 | Backend for Frontends                     | [Slides](https://docs.google.com/presentation/d/1AKgEtalLc_xAITwuzoI0cx_6Aj0ygpzTxGbrZ8opQ8c/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/bffs)                                                     | -      |
 | Service Mesh                              | [Slides](https://docs.google.com/presentation/d/1SgD9Rcling58FLBeHWg-klDOGoEWh4aecB38TbfRZjM/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/service-mesh)                                             | -      |
 | Conceitos de Concorrência e Paralelismo   | [Slides](https://docs.google.com/presentation/d/1n_jMcS5JRbd5kGaQnINlWpes3yGK5RyNg51A7zpxVtI/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/concorrencia-paralelismo/)                                | -      |
+| Protocolos de Comunicação Sincronos       | [Slides](https://docs.google.com/presentation/d/1q1_Ca_i1q24VSL5qBpyhI4a06XK3k8wqBhd1mwtcHGA/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/padroes-de-comunicacao-sincronos/)                        | -      |
+| Protocolos de Comunicação Assincronos     | [Slides](https://docs.google.com/presentation/d/1fRU-WxzzxUx6opkfi9iSUq9S4bxSOeHxhf86AiSiL-Q/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/mensageria-eventos-streaming/)                            | -      |
+| Performance, Capacidade e Escalabilidade  | [Slides](https://docs.google.com/presentation/d/1-VVvHoOHAUgz0BgfNI_Rt2OIc4vUKZG81yHhXeuwtwk/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/performance-capacidade-escalabilidade/)                   | -      |
+| The Scale Cube                            | [Slides](https://docs.google.com/presentation/d/1tocfJGuMEhY-g_8T74gBX-Pa4APcpwx_rEiD5lTBVts/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/cubo-escalabilidade/)                                     | -      |
+| Conceitos de Sharding e Particionamento   | [Slides](https://docs.google.com/presentation/d/1W0ctaVbKe75eV2yFNSMDztnpOLeiwBqe8A9_ckuSop4/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/sharding/)                                                | -      |
 
 
 # Book de Cases e Exercícios Livres 
