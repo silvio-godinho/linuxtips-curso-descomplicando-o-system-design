@@ -1,0 +1,37 @@
+# Binários compilados
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+orquestrador/orquestrador
+pedidos/pedidos
+estoque/estoque
+pagamentos/pagamentos
+entregas/entregas
+
+# Arquivos de teste
+*.test
+*.out
+
+# Arquivos de dependências
+vendor/
+go.sum
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporários
+/tmp/
+*.tmp

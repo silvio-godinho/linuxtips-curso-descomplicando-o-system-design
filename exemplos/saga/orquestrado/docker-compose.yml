@@ -1,0 +1,286 @@
+version: '3.8'
+
+services: 
+  # ==================== INFRAESTRUTURA ====================
+  
+  # Kafka - Message Broker (usando KRaft - sem Zookeeper)
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: saga-kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      # KRaft settings
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      
+      # Listeners
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://0.0.0.0:9092,CONTROLLER://kafka:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      
+      # Cluster settings
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      
+      # Log settings
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
+    volumes:
+      - kafka-data:/tmp/kraft-combined-logs
+    networks:
+      - saga
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Kafka UI - Interface para visualizar tópicos e mensagens
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: saga-kafka-ui
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - saga
+
+  # ==================== BANCOS DE DADOS ====================
+  
+  # Banco de dados do Orquestrador
+  db-orquestrador:
+    image: postgres:16-alpine
+    container_name: saga-db-orquestrador
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orquestrador
+    ports:
+      - "5432:5432"
+    volumes:
+      - orquestrador-data:/var/lib/postgresql/data
+    networks:
+      - saga
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Banco de dados do Serviço de Pedidos
+  db-pedidos:
+    image: postgres:16-alpine
+    container_name: saga-db-pedidos
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pedidos
+    ports:
+      - "5433:5432"
+    volumes:
+      - pedidos-data:/var/lib/postgresql/data
+    networks:
+      - saga
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Banco de dados do Serviço de Estoque
+  db-estoque:
+    image: postgres:16-alpine
+    container_name: saga-db-estoque
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: estoque
+    ports:
+      - "5434:5432"
+    volumes:
+      - estoque-data:/var/lib/postgresql/data
+    networks:
+      - saga
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Banco de dados do Serviço de Pagamentos
+  db-pagamentos:
+    image: postgres:16-alpine
+    container_name: saga-db-pagamentos
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pagamentos
+    ports:
+      - "5435:5432"
+    volumes:
+      - pagamentos-data:/var/lib/postgresql/data
+    networks:
+      - saga
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Banco de dados do Serviço de Entregas
+  db-entregas:
+    image: postgres:16-alpine
+    container_name: saga-db-entregas
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: entregas
+    ports:
+      - "5436:5432"
+    volumes:
+      - entregas-data:/var/lib/postgresql/data
+    networks:
+      - saga
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==================== MICROSSERVIÇOS ====================
+  
+  # Orquestrador SAGA
+  orquestrador:
+    build:
+      context: ./orquestrador
+      dockerfile: Dockerfile
+    container_name: saga-orquestrador
+    depends_on:
+      kafka:
+        condition: service_healthy
+      db-orquestrador:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: kafka:29092
+      DB_HOST: db-orquestrador
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: orquestrador
+    networks:
+      - saga
+    restart: on-failure
+
+  # Serviço de Pedidos
+  pedidos:
+    build:
+      context: ./pedidos
+      dockerfile: Dockerfile
+    container_name: saga-pedidos
+    depends_on:
+      kafka:
+        condition: service_healthy
+      db-pedidos:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: kafka:29092
+      DB_HOST: db-pedidos
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: pedidos
+    networks:
+      - saga
+    restart: on-failure
+
+  # Serviço de Estoque
+  estoque:
+    build:
+      context: ./estoque
+      dockerfile: Dockerfile
+    container_name: saga-estoque
+    depends_on:
+      kafka:
+        condition: service_healthy
+      db-estoque:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: kafka:29092
+      DB_HOST: db-estoque
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: estoque
+    networks:
+      - saga
+    restart: on-failure
+
+  # Serviço de Pagamentos
+  pagamentos:
+    build:
+      context: ./pagamentos
+      dockerfile: Dockerfile
+    container_name: saga-pagamentos
+    depends_on:
+      kafka:
+        condition: service_healthy
+      db-pagamentos:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: kafka:29092
+      DB_HOST: db-pagamentos
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: pagamentos
+    networks:
+      - saga
+    restart: on-failure
+
+  # Serviço de Entregas
+  entregas:
+    build:
+      context: ./entregas
+      dockerfile: Dockerfile
+    container_name: saga-entregas
+    depends_on:
+      kafka:
+        condition: service_healthy
+      db-entregas:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: kafka:29092
+      DB_HOST: db-entregas
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: entregas
+    networks:
+      - saga
+    restart: on-failure
+networks:
+  saga:
+    driver: bridge
+volumes:
+  kafka-data:
+  orquestrador-data:
+  pedidos-data:
+  estoque-data:
+  pagamentos-data:
+  entregas-data:
