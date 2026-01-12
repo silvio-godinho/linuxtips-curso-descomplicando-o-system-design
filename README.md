@@ -24,6 +24,9 @@
 | Conceitos de Sharding e Particionamento   | [Slides](https://docs.google.com/presentation/d/1W0ctaVbKe75eV2yFNSMDztnpOLeiwBqe8A9_ckuSop4/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/sharding/)                                                | -      |
 | Conceitos de Replicação de Dados          | [Slides](https://docs.google.com/presentation/d/12XHSxbFiQP8-fm_fBAlsLPq_DAQSy9FA8xe5oViAmEU/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/replicacao/)                                              | -      |
 | CQRS                                      | [Slides](https://docs.google.com/presentation/d/1OSA8kZN6NM-FOuj97O77lJoXByTon1F0ROJLCCHj40Y/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/cqrs/)                                                    | -      |
+| Saga Pattern                              | [Slides](https://docs.google.com/presentation/d/11dGO84jsL75qdAGim4XDF6_lXht0Rk_x3r8zoO4JjP8/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/saga-pattern/)                                            | -      | 
+| Event Sourcing                            | [Slides](https://docs.google.com/presentation/d/1ptsRDDBI0tf0nEXjQHfQtEsbYubNyW06rPcLc-eECkg/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/event-sourcing/)                                          | -      | 
+| Patterns de Resiliência                   | [Slides](https://docs.google.com/presentation/d/1EFv-14DhW-yrSrTw4Y4HCqdmeIucXkX4CVVomWDtUdk/edit?usp=sharing)                            | [Artigo](https://fidelissauro.dev/resiliencia/)                                             | -      |
 
 # Book de Cases e Exercícios Livres 
 
